@@ -3,7 +3,7 @@ from random import randint
 import re
 class RandomWebPageCrawler():
 
-    def __init__(self, startingUrlAddress:str, regexToFind):
+    def __init__(self, startingUrlAddress, regexToFind):
         self.urlAddress = startingUrlAddress
         self.webText = self.getHTTPText() 
         self.pageData = []
@@ -28,24 +28,34 @@ class RandomWebPageCrawler():
         # filter some how to avoid following incorrect links
         self.links = links
     
-    def crawl(self):
+    def crawl(self, outputToFile=False, outputPath="", verbose=False):
         webText = self.getHTTPText()
         self.findData()
-        if self.pageData:
-            for item in self.pageData:
-                print(item)
+
+        if (outputToFile):
+            self.outputFile = open(outputPath, "a")
+            if self.pageData:
+                for item in self.pageData:
+                    print(item + " : " + self.urlAddress)
+                    self.outputFile.write(item + "," + self.urlAddress + "\n")
+            
+            self.outputFile.close()
         # keep record of all pages scraped
         self.scrapedPages.append(self.urlAddress)
 
         # keep record of all data found and from which web page
         self.allData.update({self.urlAddress:self.pageData})
-        self.followRandomLink()
+
+        if (verbose):
+            self.followRandomLink(verboseOutput=True)
+        else:
+            self.followRandomLink()
 
         # discard data from one page to gather new data in the next
         del self.pageData
     
-    def followRandomLink(self):
-
+    def followRandomLink(self, verboseOutput=False):
+        self.findLinks()
         self.removeLinkDuplicates()
         try:
             randIndex = randint(0, len(self.links) - 1)
@@ -53,15 +63,29 @@ class RandomWebPageCrawler():
             attemptedLink = self.urlAddress
         except ValueError:
             # No links on page. Follow backup address.
-            print("No links found at this address. Trying a backup url.")
+            if (verboseOutput):
+                # self.outputFile.open()
+                print("No links found at this address. Trying a backup url.")
+                # self.outputFile.append("No links found at this address. Trying a backup url.")
+                # self.outputFile.close()
             randIndex = randint(0, len(self.backupAddresses) - 1)
             self.urlAddress = self.backupAddresses[randIndex]
         try:   
             self.webText = self.getHTTPText()
-            print("Searchng: " + self.urlAddress)
+            
+            if (verboseOutput):
+                # self.outputFile.open()
+                print("Searchng: " + self.urlAddress)
+                # self.outputFile.append("Searchng: " + self.urlAddress)
+                # self.outputFile.close()
         except requests.exceptions.ConnectionError:
-            print("Connection error following link")
-            print("Trying new link...")
+            if (verboseOutput):
+                # self.outputFile.open()
+                print("Connection error following link")
+                print("Trying new link...")
+                # self.outputFile.append("Connection error following link")
+                # self.outputFile.append("Trying new link...")
+                # self.outputFile.close()
 
             # remove link already attempted.
             self.links.remove(attemptedLink)
@@ -83,10 +107,11 @@ class RandomWebPageCrawler():
     def removeLinkDuplicates(self):
         self.links = set(self.links)
         self.links = list(self.links)
-
-    # modify with functions to connect to DB, or harness data in some way.
+    
+    def uploadToDB(self):
+        pass
 
 # pageCrawler will find email addresses. 
-pageCrawler = RandomWebPageCrawler("www.ign.com", r'[\w\.-]+@[\w\.-]+')
-while True:
-    pageCrawler.crawl()
+# pageCrawler = RandomWebPageCrawler("www.ign.com", r'[\w\.-]+@[\w\.-]+')
+# while True:
+#     pageCrawler.crawl(outputToFile=True, outputPath="output.csv", verbose=True)
