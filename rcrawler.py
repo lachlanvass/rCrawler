@@ -7,7 +7,7 @@ from math import inf
 
 # Configure cmdline arg parser
 parser = argparse.ArgumentParser(description="Crawl the web and by following random webpages")
-parser.add_argument("-v", help="Verbose output mode")
+parser.add_argument("-v", help="Verbose output mode", default=True)
 parser.add_argument("-r", type=int, help="How many websites you want to crawl")
 parser.add_argument("-f", help="Output file path.")
 parser.add_argument("-w", help="Starting website")

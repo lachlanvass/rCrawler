@@ -5,7 +5,6 @@ class RandomWebPageCrawler():
 
     def __init__(self, startingUrlAddress, regexToFind):
         self.urlAddress = startingUrlAddress
-        self.webText = self.getHTTPText() 
         self.pageData = []
         self.allData = {}
         self.links = []
@@ -29,7 +28,13 @@ class RandomWebPageCrawler():
         self.links = links
     
     def crawl(self, outputToFile=False, outputPath="", verbose=False):
-        webText = self.getHTTPText()
+        try:
+            self.getHTTPText()
+        except requests.exceptions.ConnectionError:
+            print("Failed to establish connection...")
+            print("Terminating")
+            quit()
+
         self.findData()
 
         if (outputToFile):
@@ -92,8 +97,6 @@ class RandomWebPageCrawler():
             # Call function again recusively.
             self.followRandomLink()
 
-
-        
     def getHTTPText(self):
         # Remove redundant "http:// string from url"
         if (self.urlAddress.startswith("http://") or self.urlAddress.startswith("https://")):
@@ -102,7 +105,7 @@ class RandomWebPageCrawler():
             res = requests.get("http://" + self.urlAddress)
         # add to scrapedPagesList to avoid scraping the same place twice
         #self.scrapedPages.append(self.urlAddress)
-        return res.text
+        self.webText = res.text
 
     def removeLinkDuplicates(self):
         self.links = set(self.links)
