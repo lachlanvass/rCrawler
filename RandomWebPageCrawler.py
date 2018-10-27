@@ -1,7 +1,7 @@
 import requests
 from random import randint
 import re
-class RandomWebPageCrawler():
+class RandomWebPageCrawler(object):
 
     def __init__(self, startingUrlAddress, regexToFind):
         self.urlAddress = startingUrlAddress
@@ -16,7 +16,11 @@ class RandomWebPageCrawler():
         "www.bing.com", "www.mashable.com", "www.medium.com", 
         "www.youtube.com", "www.adobe.com", "www.google.com", 
         "www.reddit.com", "www.wikipedia.com", "www.amazon.com",
-        "www.instagram.com", "www.stackoverflow.com"]
+        "www.instagram.com", "www.stackoverflow.com", "www.tmall.com", "www.twitter.com",
+    "www.live.com", "www.pornhub.com", "www.twitch.tv", "www.linkedin.com",
+    "www.ebay.com", "www.office.com", "www.bing.com", "www.msn.com", "www.spotify.com", 
+    "www.accuweather.com", "www.samsung.com", "www.whatsapp.com", "www.xhamster.com", 
+    "www.naver.com"]
 
     def findData(self):
         data = re.findall(self.regexToFind, self.webText)
@@ -27,7 +31,7 @@ class RandomWebPageCrawler():
         # filter some how to avoid following incorrect links
         self.links = links
     
-    def crawl(self, outputToFile=False, outputPath="", verbose=False):
+    def crawl(self, outputToFile=False, outputPath="", verbose=False, insertIntoDB=False):
         try:
             self.getHTTPText()
         except requests.exceptions.ConnectionError:
@@ -45,11 +49,11 @@ class RandomWebPageCrawler():
                     self.outputFile.write(item + "," + self.urlAddress + "\n")
             
             self.outputFile.close()
-        # keep record of all pages scraped
-        self.scrapedPages.append(self.urlAddress)
 
-        # keep record of all data found and from which web page
-        self.allData.update({self.urlAddress:self.pageData})
+        if (insertIntoDB):
+            if self.pageData:
+                for item in self.pageData:
+                    self.insertIntoDB(item, self.urlAddress)
 
         if (verbose):
             self.followRandomLink(verboseOutput=True)
@@ -110,11 +114,13 @@ class RandomWebPageCrawler():
     def removeLinkDuplicates(self):
         self.links = set(self.links)
         self.links = list(self.links)
-    
-    def uploadToDB(self):
+
+    def insertIntoDB(self, emailAddress, fromWebsite):
         pass
 
-# pageCrawler will find email addresses. 
-# pageCrawler = RandomWebPageCrawler("www.ign.com", r'[\w\.-]+@[\w\.-]+')
+
+
+# # pageCrawler will find email addresses. 
+# pageCrawler = RandomWebPageCrawler("www.achieve3000.com/contact-us/", r'[\w\.-]+@[\w\.-]+')
 # while True:
-#     pageCrawler.crawl(outputToFile=True, outputPath="output.csv", verbose=True)
+#     pageCrawler.crawl(outputToFile=True, outputPath="output.csv", verbose=True, insertIntoDB=True)
