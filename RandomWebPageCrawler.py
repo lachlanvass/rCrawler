@@ -121,6 +121,7 @@ class RandomWebPageCrawler(object):
 
 
 # # pageCrawler will find email addresses. 
+# REGEX TO FIND EMAIL ADDRESSES
 # pageCrawler = RandomWebPageCrawler("www.achieve3000.com/contact-us/", r'[\w\.-]+@[\w\.-]+')
 # while True:
 #     pageCrawler.crawl(outputToFile=True, outputPath="output.csv", verbose=True, insertIntoDB=True)
