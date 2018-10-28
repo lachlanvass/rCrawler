@@ -1,2 +1,2 @@
-# RandomWebCrawler
-A Python Web Crawler and command-line tool.
+<h1> rCrawler </h1>
+Crawl the web by following random webpages.
