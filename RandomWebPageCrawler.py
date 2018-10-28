@@ -115,7 +115,9 @@ class RandomWebPageCrawler(object):
         self.links = set(self.links)
         self.links = list(self.links)
 
-    def insertIntoDB(self, emailAddress, fromWebsite):
+    def insertIntoDB(self, data, fromWebsite):
+        # overload this method in a subclass
+        # connect to DB and insert data into in + where it came from
         pass
 
 
